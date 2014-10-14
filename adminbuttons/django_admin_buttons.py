@@ -5,40 +5,11 @@ from django.shortcuts import redirect
 from django.contrib.admin.util import unquote
 
 class ButtonAdmin(admin.ModelAdmin):
-    """
-    A subclass of this admin will let you add buttons (like history) in the
-    change view of an entry.
-
-    ex.
-    class FooAdmin(ButtonAdmin):
-       ...
-
-       def bar(self, request, obj=None):
-          if obj != None: obj.bar()
-          return None # Redirect or Response or None
-       bar.short_description='Example button'
-
-       list_buttons = [ bar ]
-       change_buttons = [ bar ]
-
-    you can then put the following in your admin/change_form.html template:
-
-       {% block object-tools %}
-           {% if change %}{% if not is_popup %}
-           <ul class="object-tools">
-           {% for button in buttons %}
-             <li><a href="{{ button.func_name }}/">{{ button.short_description }}</a></li>
-           {% endfor %}
-           <li><a href="history/" class="historylink">History</a></li>
-           {% if has_absolute_url %}<li><a href="../../../r/{{ content_type_id }}/{{ 
-object_id }}/" class="viewsitelink">View on site</a></li>{% endif%}
-           </ul>
-           {% endif %}{% endif %}
-       {% endblock %}
-
-    """
     change_buttons=[]
     list_buttons=[]
+
+    change_form_template = 'adminbuttons/change_form_buttons.html'
+    change_list_template = 'adminbuttons/change_list_buttons.html'
 
     def button_view_dispatcher(self, request, url):
         # Dispatch the url to a function call

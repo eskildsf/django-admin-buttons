@@ -1,0 +1,15 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls admin_static admin_modify %}
+{% block object-tools-items %}
+        {% for button in buttons %}
+           <li><a href="{{ button.func_name }}/" class="historylink">{{ 
+button.short_description }}</a></li>
+        {% endfor %}
+    <li>
+        {% url opts|admin_urlname:'history' original.pk|admin_urlquote as history_url %}
+        <a href="{% add_preserved_filters history_url %}" class="historylink">{% trans 
+"History" %}</a>
+    </li>
+    {% if has_absolute_url %}<li><a href="{% url 'admin:view_on_site' content_type_id 
+original.pk %}" class="viewsitelink">{% trans "View on site" %}</a></li>{% endif%}
+{% endblock %}
