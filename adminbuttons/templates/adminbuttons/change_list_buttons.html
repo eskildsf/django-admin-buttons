@@ -1,0 +1,17 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls admin_static admin_modify %}
+{% block object-tools %}
+        <ul class="object-tools">
+          {% block object-tools-items %}
+            {% if has_add_permission %}<li>
+              {% url cl.opts|admin_urlname:'add' as add_url %}
+              <a href="{% add_preserved_filters add_url is_popup %}" class="addlink">
+                {% blocktrans with cl.opts.verbose_name as name %}Add {{ name }}{% endblocktrans %}
+              </a>
+            </li>{% endif %}
+          {% endblock %}
+{% for button in buttons %}
+             <li><a href="{{ button.func_name }}/">{{ button.short_description }}</a></li>
+           {% endfor %}
+        </ul>
+    {% endblock %}
