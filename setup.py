@@ -8,7 +8,7 @@ setup(
     version = '0.1',
     author = 'Eskild Schroll-Fleischer',
     author_email = 'eskild.sf@coderer.com',
-    packages = find_packages(exclude=["example"]),
+    packages = ['adminbuttons'],
     include_package_data = True,
     install_requires = [],
     zip_safe = False,
