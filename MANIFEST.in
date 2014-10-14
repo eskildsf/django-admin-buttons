@@ -1,4 +1,2 @@
 include README.md
-recursive-include navigation *.html
-recursive-include navigation *.css
-recursive-include navigation *.js
+recursive-include adminbuttons *.py *.html *.js
