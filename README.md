@@ -12,6 +12,7 @@ django-admin-buttons
 Below is the sample code used to generate the image above. It only shows the
 "Export responses" buttons if the survey actually has responses. This is achieved by
 making the list of buttons callable (a function returning at list).
+
 	from adminbuttons.django_admin_buttons import ButtonAdmin
 	# exportResponses view redirects to the export view.
     def exportResponses(self, request, obj):
@@ -27,8 +28,9 @@ making the list of buttons callable (a function returning at list).
         if survey.hasResponse():
             buttons.append(self.exportResponses)
         return buttons
-        
+
 This code shows how to show the "View Survey" button only.
+
 	from adminbuttons.django_admin_buttons import ButtonAdmin
     # viewSurvey view redirects to the Survey on the website.
     def viewSurvey(self, request, obj):
@@ -36,8 +38,10 @@ This code shows how to show the "View Survey" button only.
     class SurveyAdmin(ButtonAdmin)
     change_buttons = [se.fviewSurvey]
 
+
 ### Example 2: Change list
 This example shows how to add a "Clear All" button to a change list in the Django admin.
+
     from adminbuttons.django_admin_buttons import ButtonAdmin
     class DeviceLogAdmin(ButtonAdmin):
         def clearLogs(self, request):
@@ -50,6 +54,7 @@ This example shows how to add a "Clear All" button to a change list in the Djang
                 return action
         clearLogs.short_description = 'Clear logs'
         list_buttons = [clearLogs]
+
 Notice that a specific object is not passed along to the buttons' view.
 
 You could make this example more complex by having the "Clear logs" button only show
