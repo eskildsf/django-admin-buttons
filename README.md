@@ -13,30 +13,33 @@ Below is the sample code used to generate the image above. It only shows the
 "Export responses" buttons if the survey actually has responses. This is achieved by
 making the list of buttons callable (a function returning at list).
 
-	from adminbuttons.django_admin_buttons import ButtonAdmin
-	# exportResponses view redirects to the export view.
-    def exportResponses(self, request, obj):
-        return redirect(reverse('questionnaire:export', args=[obj.id]))
-    exportResponses.short_description = 'Export responses'
-    # viewSurvey view redirects to the Survey on the website.
-    def viewSurvey(self, request, obj):
-        return redirect(reverse('questionnaire:survey', args=[obj.id]))
+    from adminbuttons.django_admin_buttons import ButtonAdmin
     class SurveyAdmin(ButtonAdmin)
-    def change_buttons(self, object_id):
-        survey = Survey.objects.get(id=object_id)
-        buttons = [self.viewSurvey]
-        if survey.hasResponse():
-            buttons.append(self.exportResponses)
-        return buttons
+        # exportResponses view redirects to the export view.
+        def exportResponses(self, request, obj):
+            return redirect(reverse('questionnaire:export', args=[obj.id]))
+        exportResponses.short_description = 'Export responses'
+        # viewSurvey view redirects to the Survey on the website.
+        def viewSurvey(self, request, obj):
+            return redirect(reverse('questionnaire:survey', args=[obj.id]))
+        viewSurvey.short_description = 'View survey'
+        # Figure out which buttons to show depending on the object at hand
+        def change_buttons(self, object_id):
+            survey = Survey.objects.get(id=object_id)
+            buttons = [self.viewSurvey]
+            if survey.hasResponse():
+                buttons.append(self.exportResponses)
+            return buttons
 
 This code shows how to show the "View Survey" button only.
 
-	from adminbuttons.django_admin_buttons import ButtonAdmin
-    # viewSurvey view redirects to the Survey on the website.
-    def viewSurvey(self, request, obj):
-        return redirect(reverse('questionnaire:survey', args=[obj.id]))
+    from adminbuttons.django_admin_buttons import ButtonAdmin
     class SurveyAdmin(ButtonAdmin)
-    change_buttons = [se.fviewSurvey]
+        # viewSurvey view redirects to the Survey on the website.
+        def viewSurvey(self, request, obj):
+            return redirect(reverse('questionnaire:survey', args=[obj.id]))
+        viewSurvey.short_description = 'View survey'
+        change_buttons = [self.viewSurvey]
 
 
 ### Example 2: Change list
@@ -53,7 +56,7 @@ This example shows how to add a "Clear All" button to a change list in the Djang
             else:
                 return action
         clearLogs.short_description = 'Clear logs'
-        list_buttons = [clearLogs]
+        list_buttons = [self.clearLogs]
 
 Notice that a specific object is not passed along to the buttons' view.
 
