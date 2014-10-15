@@ -3,50 +3,66 @@ django-admin-buttons
 
 ### Features
 
- - use django admin for editing menus
- - flatpages, and django-cms support out of the box
- - auto-generated menus
- - custom menus
- - breadcrumbs
- - select current navigation item
- - display part of a menu
+ - Add buttons to the django admin change list and edit view.
 
+### Example 1: Change form
 
-### Example
+![ScreenShot](https://raw.githubusercontent.com/eskildsf/django-admin-buttons/master/screenshots/example.png)
 
-![ScreenShot](https://raw.githubusercontent.com/rrafal/django-navigation/master/screenshots/website-menu.png)
+Below is the sample code used to generate the image above. It only shows the
+"Export responses" buttons if the survey actually has responses. This is achieved by
+making the list of buttons callable (a function returning at list).
+	from adminbuttons.django_admin_buttons import ButtonAdmin
+	# exportResponses view redirects to the export view.
+    def exportResponses(self, request, obj):
+        return redirect(reverse('questionnaire:export', args=[obj.id]))
+    exportResponses.short_description = 'Export responses'
+    # viewSurvey view redirects to the Survey on the website.
+    def viewSurvey(self, request, obj):
+        return redirect(reverse('questionnaire:survey', args=[obj.id]))
+    class SurveyAdmin(ButtonAdmin)
+    def change_buttons(self, object_id):
+        survey = Survey.objects.get(id=object_id)
+        buttons = [self.viewSurvey]
+        if survey.hasResponse():
+            buttons.append(self.exportResponses)
+        return buttons
+        
+This code shows how to show the "View Survey" button only.
+	from adminbuttons.django_admin_buttons import ButtonAdmin
+    # viewSurvey view redirects to the Survey on the website.
+    def viewSurvey(self, request, obj):
+        return redirect(reverse('questionnaire:survey', args=[obj.id]))
+    class SurveyAdmin(ButtonAdmin)
+    change_buttons = [se.fviewSurvey]
 
-Bellow is a sample template that you can use to display flatpages. 
+### Example 2: Change list
+This example shows how to add a "Clear All" button to a change list in the Django admin.
+    from adminbuttons.django_admin_buttons import ButtonAdmin
+    class DeviceLogAdmin(ButtonAdmin):
+        def clearLogs(self, request):
+            # Deletes all log entries
+            result = DeviceLog.objects.all()
+            action = delete_selected(self, request, result)
+            if action is None:
+                return redirect(reverse('admin:slideshow_devicelog_changelist'))
+            else:
+                return action
+        clearLogs.short_description = 'Clear logs'
+        list_buttons = [clearLogs]
+Notice that a specific object is not passed along to the buttons' view.
 
-    {% load navigation_tags %}
-    <html>
-        <head>
-    		<title>{{ flatpage.title }}</title>
-    	</head>
-    	<body>
-    		
-    		<h1>{{ flatpage.title }}</h1>
-    		<div>{% show_navigation_breadcrumbs with sitemap="flatpages"  %}</div>
-    		<nav>
-    			{% show_navigation_menu "Main Menu" %}
-    		</nav>
-    		<div>{{ flatpage.content }}</div>
-    	</body>
-    </html>
-    
+You could make this example more complex by having the "Clear logs" button only show
+up when there are records to delete.
 
 ### Authors
- - [Rafal Radulski](http://www.radulski.net/)
-
+ - [Eskild Schroll-Fleischer]
 
 ## Installation
 
-1. `pip install git+https://github.com/rrafal/django-navigation.git`
+1. `pip install git+https://github.com/eskildsf/django-admin-buttons.git`
 2. Edit settings.py
-3. Add 'navigation' to INSTALLED_APPS
-4. Add NAVIGATION_SITEMAPS. You can add following entries:
-  - 'navigation.base.FlatPageSitemapInfo'
-  - 'navigation.base.CMSSitemapInfo'
+3. Add 'adminbuttons' to INSTALLED_APPS
 
 Example:
 
@@ -57,66 +73,11 @@ Example:
         'django.contrib.sites',
         'django.contrib.messages',
         'django.contrib.staticfiles',
-        'django.contrib.flatpages',
-        'south',    
-        'navigation',
+        'django.contrib.flatpages',  
+        'adminbuttons',
     )
-
-    NAVIGATION_SITEMAPS = (
-        'navigation.base.FlatPageSitemapInfo',
-    )
-
-### How to Use
-
-
-You will find a new section in you Django Admin. It allows you to create menus.
-
-When you change pages, menus need to be refreshed. Go to a menu that needs to be 
-updated and click "Refresh". You can also select all menus and update them all at once.
-
-Once you create a menu, you need to add it to template. Use **show_navigation_menu** to do 
-it.
-You need to give it menu name. You can also tell it to display only a part of the menu. 
-
-    {% show_navigation_menu "Main Menu" with root="/accounts/"  %}
-
-
-If *django.core.context_processors.request* is not enabled, or *RequestContext* is not used,
-you can pass current URL directly. For example:
-
-    {% show_navigation_menu "Main Menu" with request_path=flatpage.url  %}
-    
-To customize the HTML of the output, copy and edit this template file: 
-**navigation/templates/navigation/menu.html**
-You can also specify your own template in the tag:
-
-    {% show_navigation_menu "Main Menu" with template="nav/simple_menu.html"  %}
-
-You can add breadcrumbs using **show_navigation_breadcrumbs** template tab. You need to tell 
-it what sitemap to use:
-
-    {% show_navigation_breadcrumbs with sitemap="flatpages"  %}
-    
-If you rather use menu to generate sitemaps, you can do that too:
-
-    {% show_navigation_breadcrumbs with menu="Main Menu"  %}
-
-Sitemap support *request_path* and *tempalate* arguments as well:
-
-    {% show_navigation_breadcrumbs with sitemap="flatpages", request_path=flatpage.url, 
-template="nav/simple_crumbs.html"  %}
 
 
 ### Help
 
-
-If you don't know how to do something. Check the wiki first:
-https://github.com/rrafal/django-navigation/wiki
-
-django-navigation is a very new project. It surely has some bugs. If you find any, please 
-report.
-There are some features that I'd like to add to the project. If you have any too, make a 
-request.
-
-I'm rather new to django. If you have any suggestions for this project, please submit them 
-to me.
+Create an issue on Github.
