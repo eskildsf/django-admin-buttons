@@ -17,8 +17,7 @@ class ButtonAdmin(admin.ModelAdmin):
             import re
             res = re.match('(.*/)?(?P<id>\d+)/(?P<command>.*)', url)
             if res:
-                if res.group('command') in [b.func_name for b in 
-self._get_change_buttons(res.group('id'))]:
+                if res.group('command') in [b.func_name for b in self._get_change_buttons(res.group('id'))]:
                     obj = self.model._default_manager.get(pk=res.group('id'))
                     response = getattr(self, res.group('command'))(request, obj)
                     if response is None:
@@ -27,8 +26,7 @@ self._get_change_buttons(res.group('id'))]:
             else:
                 res = re.match('(.*/)?(?P<command>.*)', url)
                 if res:
-                    if res.group('command') in [b.func_name for b in 
-self._get_list_buttons()]:
+                    if res.group('command') in [b.func_name for b in self._get_list_buttons()]:
                         response = getattr(self, res.group('command'))(request)
                         if response is None:
                             return redirect(request.META['HTTP_REFERER'])
@@ -63,8 +61,7 @@ self._get_list_buttons()]:
         extra_context['buttons'] = self._convert_buttons(buttons)
         if '/' in object_id:
             object_id = object_id[:object_id.find('/')]
-        return super(ButtonAdmin, self).change_view(request, object_id, form_url, 
-extra_context)
+        return super(ButtonAdmin, self).change_view(request, object_id, form_url, extra_context)
 
     def changelist_view(self, request, extra_context=None):
         if not extra_context: extra_context = {}
@@ -89,9 +86,8 @@ extra_context)
             if callable(entity):
                 buttons = self.change_buttons(object_id)
             else:
-                buttons = self.list_buttons        
+                buttons = self.change_buttons        
         return buttons
 
     def _convert_buttons(self, orig_buttons):
-        return [{'func_name': b.func_name, 'short_description': b.short_description} for b 
-in orig_buttons]
+        return [{'func_name': b.func_name, 'short_description': b.short_description} for b in orig_buttons]
